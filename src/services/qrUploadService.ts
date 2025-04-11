@@ -28,9 +28,11 @@ export const processQRCodeImage = (file: File): Promise<string> => {
       })
       .finally(() => {
         // Clean up the QR code scanner instance
-        html5QrCode.clear().catch(error => 
-          console.error("Failed to clear html5QrCode", error)
-        );
+        try {
+          html5QrCode.clear();
+        } catch (error) {
+          console.error("Failed to clear html5QrCode", error);
+        }
       });
   });
 };
