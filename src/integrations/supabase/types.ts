@@ -14,39 +14,60 @@ export type Database = {
           address: string | null
           college_email: string | null
           created_at: string | null
+          docker_skill: string | null
+          has_paid: boolean | null
+          has_used_docker: boolean | null
           id: string
           is_registered: boolean | null
+          joined_group: boolean | null
           name: string
+          payment_qr: string | null
           personal_email: string | null
           phone: string | null
+          present: boolean | null
           roll: string
           section: string | null
+          transaction_id: string | null
           year: string | null
         }
         Insert: {
           address?: string | null
           college_email?: string | null
           created_at?: string | null
+          docker_skill?: string | null
+          has_paid?: boolean | null
+          has_used_docker?: boolean | null
           id?: string
           is_registered?: boolean | null
+          joined_group?: boolean | null
           name: string
+          payment_qr?: string | null
           personal_email?: string | null
           phone?: string | null
+          present?: boolean | null
           roll: string
           section?: string | null
+          transaction_id?: string | null
           year?: string | null
         }
         Update: {
           address?: string | null
           college_email?: string | null
           created_at?: string | null
+          docker_skill?: string | null
+          has_paid?: boolean | null
+          has_used_docker?: boolean | null
           id?: string
           is_registered?: boolean | null
+          joined_group?: boolean | null
           name?: string
+          payment_qr?: string | null
           personal_email?: string | null
           phone?: string | null
+          present?: boolean | null
           roll?: string
           section?: string | null
+          transaction_id?: string | null
           year?: string | null
         }
         Relationships: []
