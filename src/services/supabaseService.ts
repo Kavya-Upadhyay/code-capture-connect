@@ -12,6 +12,7 @@ export const saveUserToSupabase = async (userData: UserInfo): Promise<void> => {
   try {
     const { error: connectionError } = await supabase.from('students').select('count').limit(1);
     if (connectionError) {
+      console.error("Supabase connection error:", connectionError);
       throw new Error(`Failed to connect to Supabase: ${connectionError.message}`);
     }
     
@@ -36,6 +37,8 @@ export const saveUserToSupabase = async (userData: UserInfo): Promise<void> => {
       console.error("Error saving to Supabase:", error);
       throw new Error(`Failed to save data: ${error.message}`);
     }
+    
+    console.log("Data successfully saved to Supabase");
   } catch (error) {
     console.error("Error in saveUserToSupabase:", error);
     throw error;
