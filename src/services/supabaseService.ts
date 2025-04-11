@@ -1,19 +1,33 @@
 
+import { supabase } from "@/integrations/supabase/client";
 import { UserInfo } from "@/types/userInfo";
 
-// This is a placeholder service that will be replaced with actual
-// Supabase implementation once the user connects to Supabase
+/**
+ * Saves user information to the Supabase database
+ * @param userData The user information to save
+ * @returns Promise that resolves when the data has been saved
+ */
 export const saveUserToSupabase = async (userData: UserInfo): Promise<void> => {
-  // This function will be implemented when Supabase is connected
-  throw new Error(
-    "Supabase is not connected. Please connect your project to Supabase first."
-  );
-  
-  // When Supabase is connected, this would be implemented as:
-  // const { data, error } = await supabase
-  //  .from('users')
-  //  .insert([userData]);
-  //
-  // if (error) throw error;
-  // return data;
+  const { data, error } = await supabase
+    .from('students')
+    .upsert({
+      name: userData.name,
+      roll: userData.rollNumber,
+      personal_email: userData.personalEmail,
+      college_email: userData.collegeEmail,
+      phone: userData.phone,
+      address: userData.address,
+      section: userData.branch,
+      year: userData.year,
+      is_registered: userData.isHosteller
+    }, {
+      onConflict: 'roll'
+    });
+
+  if (error) {
+    console.error("Error saving to Supabase:", error);
+    throw new Error(`Failed to save data: ${error.message}`);
+  }
+
+  return;
 };

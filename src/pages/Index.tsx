@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import QRScanner from "@/components/QRScanner";
+import QRUploader from "@/components/QRUploader";
 import UserInfoCard from "@/components/UserInfoCard";
 import { toast } from "sonner";
 import { UserInfo } from "@/types/userInfo";
@@ -64,16 +65,22 @@ const Index = () => {
                 <div className="text-center space-y-4">
                   <h2 className="text-xl font-medium text-gray-800">Ready to Scan</h2>
                   <p className="text-gray-600 max-w-md mx-auto">
-                    Click the button below to start scanning a QR code containing user information.
+                    Scan a QR code containing user information or upload a QR code image.
                   </p>
                 </div>
-                <Button 
-                  size="lg" 
-                  onClick={() => setScanning(true)}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  Start Scanning
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    size="lg" 
+                    onClick={() => setScanning(true)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Start Scanning
+                  </Button>
+                  <QRUploader 
+                    onScan={handleScan} 
+                    onError={handleError} 
+                  />
+                </div>
               </div>
             ) : scanning ? (
               <div className="flex flex-col items-center">
