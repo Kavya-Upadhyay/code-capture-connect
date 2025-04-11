@@ -9,12 +9,21 @@ import { UserInfo } from "@/types/userInfo";
  */
 export const processQRCodeImage = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const html5QrCode = new Html5Qrcode("qr-reader-hidden");
+    // Create a unique element ID for this scan instance
+    const scannerElementId = `qr-reader-hidden-${Date.now()}`;
     
-    // First create a file URL that can be used by the QR code reader
+    // Create a temporary div element
+    const tempDiv = document.createElement('div');
+    tempDiv.id = scannerElementId;
+    tempDiv.style.display = 'none';
+    document.body.appendChild(tempDiv);
+    
+    const html5QrCode = new Html5Qrcode(scannerElementId);
+    
+    // Create a file URL that can be used by the QR code reader
     const fileUrl = URL.createObjectURL(file);
     
-    // Then attempt to decode the QR code from the image
+    // Attempt to decode the QR code from the image
     html5QrCode.scanFile(file, /* showImage */ false)
       .then(decodedText => {
         // Release the object URL when done to avoid memory leaks
@@ -32,6 +41,11 @@ export const processQRCodeImage = (file: File): Promise<string> => {
           html5QrCode.clear();
         } catch (error) {
           console.error("Failed to clear html5QrCode", error);
+        }
+        
+        // Remove the temporary element
+        if (tempDiv && tempDiv.parentNode) {
+          tempDiv.parentNode.removeChild(tempDiv);
         }
       });
   });

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { Loader2 } from "lucide-react";
 
@@ -10,6 +10,8 @@ interface QRScannerProps {
 
 const QRScanner: React.FC<QRScannerProps> = ({ onScan, onError }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const isScanning = useRef<boolean>(false);
   
   useEffect(() => {
     const qrScannerId = "qr-reader";
@@ -17,30 +19,67 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScan, onError }) => {
     
     if (!qrContainer) return;
     
-    const html5QrCode = new Html5Qrcode(qrScannerId);
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-    
-    html5QrCode.start(
-      { facingMode: "environment" },
-      config,
-      (decodedText) => {
-        onScan(decodedText);
-        html5QrCode.stop().catch(err => console.error("Failed to stop scanner:", err));
-      },
-      (errorMessage) => {
-        console.log(errorMessage);
-      }
-    )
-    .then(() => {
+    // Initialize scanner
+    try {
+      scannerRef.current = new Html5Qrcode(qrScannerId);
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+      
+      // Start scanning
+      scannerRef.current.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          onScan(decodedText);
+          // Only attempt to stop if we're actually scanning
+          if (scannerRef.current && isScanning.current) {
+            try {
+              scannerRef.current.stop()
+                .then(() => {
+                  console.log("Scanner stopped successfully");
+                  isScanning.current = false;
+                })
+                .catch(err => {
+                  console.error("Failed to stop scanner:", err);
+                });
+            } catch (err) {
+              console.error("Error stopping scanner:", err);
+            }
+          }
+        },
+        (errorMessage) => {
+          console.log(errorMessage);
+        }
+      )
+      .then(() => {
+        setIsLoading(false);
+        isScanning.current = true;
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        onError(err instanceof Error ? err : new Error(String(err)));
+      });
+    } catch (error) {
+      console.error("Error initializing scanner:", error);
       setIsLoading(false);
-    })
-    .catch((err) => {
-      setIsLoading(false);
-      onError(err);
-    });
+      onError(error instanceof Error ? error : new Error(String(error)));
+    }
     
+    // Cleanup function
     return () => {
-      html5QrCode.stop().catch(err => console.error("Failed to stop scanner on cleanup:", err));
+      if (scannerRef.current && isScanning.current) {
+        try {
+          scannerRef.current.stop()
+            .then(() => {
+              console.log("Scanner cleanup successful");
+              isScanning.current = false;
+            })
+            .catch(err => {
+              console.error("Failed to stop scanner on cleanup:", err);
+            });
+        } catch (err) {
+          console.error("Error stopping scanner on cleanup:", err);
+        }
+      }
     };
   }, [onScan, onError]);
   
